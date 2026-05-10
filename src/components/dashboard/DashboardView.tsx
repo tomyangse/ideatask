@@ -21,8 +21,8 @@ const STATUS_COLORS: Record<string, string> = {
 
 const IDEA_STATUS_BADGE: Record<string, { bg: string; text: string; label: string }> = {
   spark: { bg: '#EDE9FE', text: '#7C3AED', label: '新想法' },
-  todo: { bg: '#FFEDD5', text: '#EA580C', label: '待整理' },
-  open: { bg: '#FEF9C3', text: '#CA8A04', label: '待评估' },
+  active: { bg: '#FFEDD5', text: '#EA580C', label: '待整理' },
+  in_progress: { bg: '#FEF9C3', text: '#CA8A04', label: '待评估' },
 };
 
 function getProjectIcon(title: string) {
@@ -47,7 +47,7 @@ export default function DashboardView() {
 
   // Idea Library: type=idea, only unstarted statuses
   const ideaLibrary = nodes.filter(
-    (n) => n.type === 'idea' && ['spark', 'todo', 'open'].includes(n.status)
+    (n) => n.type === 'idea' && ['spark', 'active', 'in_progress'].includes(n.status)
   );
 
   // Derived metrics for a project

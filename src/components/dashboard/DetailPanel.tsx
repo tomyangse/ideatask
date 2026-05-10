@@ -11,15 +11,15 @@ import {
 
 const STATUS_OPTIONS_IDEA = [
   { value: 'spark', label: '新想法', bg: '#EDE9FE', text: '#7C3AED' },
-  { value: 'todo', label: '待整理', bg: '#FFEDD5', text: '#EA580C' },
-  { value: 'open', label: '待评估', bg: '#FEF9C3', text: '#CA8A04' },
+  { value: 'active', label: '待整理', bg: '#FFEDD5', text: '#EA580C' },
+  { value: 'in_progress', label: '待评估', bg: '#FEF9C3', text: '#CA8A04' },
 ];
 
 const STATUS_OPTIONS_PROJECT = [
   { value: 'active', label: 'Active', bg: '#D1FAE5', text: '#059669' },
-  { value: 'planning', label: 'Planning', bg: '#DBEAFE', text: '#2563EB' },
-  { value: 'paused', label: 'Paused', bg: '#F3F4F6', text: '#6B7280' },
-  { value: 'blocked', label: 'Blocked', bg: '#FEE2E2', text: '#DC2626' },
+  { value: 'in_progress', label: 'In Progress', bg: '#DBEAFE', text: '#2563EB' },
+  { value: 'done', label: 'Done', bg: '#F3F4F6', text: '#6B7280' },
+  { value: 'archived', label: 'Archived', bg: '#FEE2E2', text: '#DC2626' },
 ];
 
 function getProjectIcon(title: string) {
@@ -66,7 +66,7 @@ export default function DetailPanel({ node, onClose }: DetailPanelProps) {
   };
 
   const handleConvertToProject = () => {
-    updateNode(node.id, { type: 'project', status: 'planning' });
+    updateNode(node.id, { type: 'project', status: 'active' });
     onClose();
   };
 
