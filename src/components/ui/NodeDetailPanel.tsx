@@ -20,6 +20,12 @@ const STATUS_LABELS: Record<NodeStatus, string> = {
   in_progress: '🔵 In Progress',
   done: '✅ Done',
   archived: '🌑 Archived',
+  planning: '📋 Planning',
+  paused: '⏸️ Paused',
+  blocked: '🔴 Blocked',
+  open: '📂 Open',
+  todo: '📝 Todo',
+  doing: '🔧 Doing',
 };
 
 export default function NodeDetailPanel() {
