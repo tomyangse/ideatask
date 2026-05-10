@@ -1,0 +1,237 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 20vh;
+  background: rgba(3, 0, 20, 0.6);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 150ms ease-out;
+}
+
+.container {
+  width: 100%;
+  max-width: 600px;
+  animation: slideDown 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Parent context bar */
+.contextBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  margin-bottom: 8px;
+  background: rgba(124, 58, 237, 0.15);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: 10px;
+  animation: fadeIn 200ms ease-out;
+}
+
+.contextIcon {
+  font-size: 14px;
+  color: #A78BFA;
+}
+
+.contextLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.contextTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #E2E8F0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Input wrapper */
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(13, 18, 36, 0.9);
+  backdrop-filter: blur(24px) saturate(1.5);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-radius: 16px;
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(124, 58, 237, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.icon {
+  padding-left: 20px;
+  font-size: 20px;
+  color: var(--accent-nova-glow);
+  flex-shrink: 0;
+}
+
+.input {
+  flex: 1;
+  padding: 18px 20px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.shortcut {
+  padding-right: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.aiToggle {
+  background: transparent;
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  margin-right: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.aiToggle:hover {
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--text-primary);
+  border-color: rgba(124, 58, 237, 0.5);
+}
+
+.aiToggleActive {
+  background: rgba(124, 58, 237, 0.2);
+  border-color: rgba(124, 58, 237, 0.8);
+  color: var(--accent-nova-glow);
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.2);
+}
+
+.loading {
+  padding-right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.loadingDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-nova-glow);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.loadingDot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.loadingDot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* Captured items list */
+.capturedList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.capturedItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  border-radius: 8px;
+  animation: capturedPop 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.capturedIcon {
+  font-size: 12px;
+  color: #A78BFA;
+  flex-shrink: 0;
+}
+
+.capturedTitle {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: #E2E8F0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.capturedCheck {
+  font-size: 12px;
+  color: #10B981;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.hint {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  animation: fadeIn 400ms ease-out 200ms both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes capturedPop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
