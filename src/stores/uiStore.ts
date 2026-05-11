@@ -40,6 +40,13 @@ interface UIState {
   /* Active View */
   activeView: string;
   setActiveView: (view: string) => void;
+
+  /* Project Page */
+  activeProjectId: string | null;
+  projectView: 'mindmap' | 'timeline';
+  enterProject: (id: string) => void;
+  exitProject: () => void;
+  setProjectView: (view: 'mindmap' | 'timeline') => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -88,4 +95,11 @@ export const useUIStore = create<UIState>((set) => ({
   /* Active View */
   activeView: 'Dashboard',
   setActiveView: (activeView) => set({ activeView }),
+
+  /* Project Page */
+  activeProjectId: null,
+  projectView: 'mindmap',
+  enterProject: (id) => set({ activeProjectId: id, projectView: 'mindmap', focusedSystemId: id }),
+  exitProject: () => set({ activeProjectId: null, focusedSystemId: null }),
+  setProjectView: (projectView) => set({ projectView }),
 }));

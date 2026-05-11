@@ -7,6 +7,7 @@ import { useCosmosStore } from '@/stores/cosmosStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useEffect, useState } from 'react';
 import DashboardView from '@/components/dashboard/DashboardView';
+import ProjectPage from '@/components/project/ProjectPage';
 import UserProfile from '@/components/ui/UserProfile';
 import { 
   IconFolder, IconLightbulb, IconLayoutGrid, IconList, IconNetwork, IconSparkles, IconArrowLeft 
@@ -31,6 +32,7 @@ export default function CosmosPage() {
   const [activeFilter, setActiveFilter] = useState('All');
   const activeView = useUIStore((s) => s.activeView);
   const setActiveView = useUIStore((s) => s.setActiveView);
+  const activeProjectId = useUIStore((s) => s.activeProjectId);
 
   // Load backend data on mount
   useEffect(() => {
@@ -44,10 +46,16 @@ export default function CosmosPage() {
 
   return (
     <>
-      {activeView === 'Mindmap' && <CosmosCanvas />}
-      {activeView === 'Dashboard' && <DashboardView />}
+      {activeProjectId ? (
+        <ProjectPage projectId={activeProjectId} />
+      ) : (
+        <>
+          {activeView === 'Mindmap' && <CosmosCanvas />}
+          {activeView === 'Dashboard' && <DashboardView />}
+        </>
+      )}
       <OmniBar />
-      <FloatingCapsule />
+      {!activeProjectId && <FloatingCapsule />}
 
       {/* Top Navigation Bar */}
       <div
@@ -107,8 +115,8 @@ export default function CosmosPage() {
         </div>
       </div>
 
-      {/* Filter Chips & View Controls Row */}
-      <div style={{
+      {/* Filter Chips & View Controls Row — hide when in project page */}
+      {!activeProjectId && <div style={{
         position: 'fixed',
         top: '84px',
         left: '24px',
@@ -217,10 +225,10 @@ export default function CosmosPage() {
             ))}
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Bottom-left: contextual hints */}
-      {activeView === 'Mindmap' && (
+      {!activeProjectId && activeView === 'Mindmap' && (
         <div
           style={{
             position: 'fixed',

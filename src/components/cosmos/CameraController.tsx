@@ -20,18 +20,58 @@ export default function CameraController() {
   const zoomRef = useRef(80);
   const targetZoomRef = useRef(80);
 
-  // When a system is focused, move camera to it; reset when unfocused
+  const activeProjectId = useUIStore((s) => s.activeProjectId);
+  const nodes = useCosmosStore((s) => s.nodes);
+
+  // When a system is focused, auto-fit the tree into view
   const prevFocusedRef = useRef<string | null>(null);
   useEffect(() => {
     if (focusedSystemId) {
-      const node = getNodeById(focusedSystemId);
-      if (node) {
-        // Offset left so mind-map branches have room on the right
-        targetRef.current.set(node.pos_x + 12, node.pos_y, 0);
-        targetZoomRef.current = 40; // Zoom in for mind-map view
+      const rootNode = getNodeById(focusedSystemId);
+      if (rootNode) {
+        // Compute bounding box of all descendants for auto-fit
+        const descendants = nodes.filter(n => {
+          let cur = n;
+          while (cur.parent_id) {
+            if (cur.parent_id === focusedSystemId) return true;
+            const parent = nodes.find(p => p.id === cur.parent_id);
+            if (!parent) break;
+            cur = parent;
+          }
+          return false;
+        });
+
+        if (activeProjectId && descendants.length > 0) {
+          // For project page: auto-fit all nodes
+          // Compute actual tree depth
+          let maxDepth = 0;
+          const getDepth = (id: string, depth: number) => {
+            if (depth > maxDepth) maxDepth = depth;
+            nodes.filter(n => n.parent_id === id).forEach(n => getDepth(n.id, depth + 1));
+          };
+          getDepth(focusedSystemId, 0);
+
+          const count = descendants.length;
+          const COL_WIDTH = 85;
+          const ROW_HEIGHT = 28;
+          const treeWidth = maxDepth * COL_WIDTH;
+          const treeHeight = count * ROW_HEIGHT;
+
+          // Center on middle of the tree
+          targetRef.current.set(
+            rootNode.pos_x + treeWidth / 2 + 20,
+            rootNode.pos_y,
+            0
+          );
+          // Zoom to fit the larger dimension with some padding
+          const fitZoom = Math.max(treeWidth / 1.4, treeHeight / 1.4, 25);
+          targetZoomRef.current = fitZoom;
+        } else {
+          targetRef.current.set(rootNode.pos_x + 12, rootNode.pos_y, 0);
+          targetZoomRef.current = 40;
+        }
       }
     } else if (prevFocusedRef.current) {
-      // Was focused, now exiting — reset to overview
       targetRef.current.set(0, 0, 0);
       targetZoomRef.current = 80;
     } else if (focusTarget) {
@@ -39,7 +79,7 @@ export default function CameraController() {
       targetZoomRef.current = 20;
     }
     prevFocusedRef.current = focusedSystemId;
-  }, [focusedSystemId, focusTarget, getNodeById]);
+  }, [focusedSystemId, focusTarget, getNodeById, activeProjectId, nodes]);
 
   // Mouse wheel zoom
   const handleWheel = useCallback((e: WheelEvent) => {

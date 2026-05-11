@@ -80,12 +80,21 @@ export default function StarSystem({ rootNode, isFocused }: StarSystemProps) {
   }, [nodes, rootNode.id]);
 
   // ── MIND MAP EXPANDED STATE ──
-  // A node is expanded if it's the root project, OR if it's selected, OR if it's an ancestor of the selected node.
+  const activeProjectId = useUIStore((s) => s.activeProjectId);
+  const isProjectPage = activeProjectId === rootNode.id;
+
   const expandedSet = useMemo(() => {
     const set = new Set<string>();
-    set.add(rootNode.id); // Root is always expanded when focused
+    set.add(rootNode.id);
 
-    if (selectedNodeId) {
+    // When inside project page, expand ALL descendants for full visibility
+    if (isProjectPage) {
+      const addAll = (parentId: string) => {
+        set.add(parentId);
+        nodes.filter(n => n.parent_id === parentId).forEach(n => addAll(n.id));
+      };
+      addAll(rootNode.id);
+    } else if (selectedNodeId) {
       set.add(selectedNodeId);
       let current = nodes.find(n => n.id === selectedNodeId);
       while (current && current.parent_id) {
@@ -95,7 +104,7 @@ export default function StarSystem({ rootNode, isFocused }: StarSystemProps) {
       }
     }
     return set;
-  }, [rootNode.id, selectedNodeId, nodes]);
+  }, [rootNode.id, selectedNodeId, nodes, isProjectPage]);
 
   // ── LAYOUT ENGINE (Recursive Tree) ──
   const layoutMap = useMemo(() => {
@@ -111,8 +120,8 @@ export default function StarSystem({ rootNode, isFocused }: StarSystemProps) {
       }
     });
 
-    const ROW_HEIGHT = 45; // Vertical spacing per node
-    const COL_WIDTH = 120;  // Horizontal spacing per depth
+    const ROW_HEIGHT = 28; // Compact vertical spacing
+    const COL_WIDTH = 85;  // Compact horizontal spacing
 
     // First pass: compute height of each subtree
     const heightMap = new Map<string, number>();
