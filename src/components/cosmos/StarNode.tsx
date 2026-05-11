@@ -200,11 +200,18 @@ export default function StarNode({ node, isCenter, isOrbital, isMicroMode = fals
       if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
 
       const createNode = (parentId: string | null) => {
+        // Determine default type based on context:
+        // Under a project → task/todo, under an idea → idea/spark
+        const parentNode = parentId ? useCosmosStore.getState().nodes.find(n => n.id === parentId) : null;
+        const rootIsProject = useUIStore.getState().activeProjectId != null;
+        const defaultType = rootIsProject ? 'task' : 'idea';
+        const defaultStatus = rootIsProject ? 'todo' : 'spark';
+
         const newNode: ExoNode = {
           id: crypto.randomUUID(),
           user_id: '',
-          type: 'idea',
-          status: 'spark',
+          type: defaultType,
+          status: defaultStatus,
           title: '',
           content: '',
           summary: null,
@@ -267,7 +274,8 @@ export default function StarNode({ node, isCenter, isOrbital, isMicroMode = fals
   const BASE_ZOOM = 80;
   const cssScale = Math.min(BASE_ZOOM / Math.max(cameraZoom, 1), 1.8);
 
-  const isProject = node.type === 'project' || isCenter;
+  const activeIdeaId = useUIStore((s) => s.activeIdeaId);
+  const isProject = node.type === 'project' || (isCenter && !isOrbital && activeIdeaId === node.id);
 
   return (
     <group ref={groupRef} position={position}>
@@ -309,21 +317,22 @@ export default function StarNode({ node, isCenter, isOrbital, isMicroMode = fals
         >
           {isProject ? (
             <>
-              {/* Project Card Layout */}
+              {/* Root Card Layout (Project or Idea) */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
                 <div style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   width: '32px', height: '32px', borderRadius: '8px',
-                  background: 'rgba(124, 58, 237, 0.1)', color: '#7C3AED'
+                  background: node.type === 'idea' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(124, 58, 237, 0.1)',
+                  color: node.type === 'idea' ? '#F59E0B' : '#7C3AED'
                 }}>
-                  <IconFolder width={20} height={20} />
+                  {node.type === 'idea' ? <IconLightbulb width={20} height={20} /> : <IconFolder width={20} height={20} />}
                 </div>
                 
                 {isEditing ? (
                   <input
                     ref={inputRef}
                     defaultValue={node.title}
-                    placeholder="Project Name"
+                    placeholder={node.type === 'idea' ? 'Idea Name' : 'Project Name'}
                     onBlur={(e) => {
                       const val = e.currentTarget.value.trim();
                       if (val) updateNode(node.id, { title: val, content: val });
@@ -343,7 +352,7 @@ export default function StarNode({ node, isCenter, isOrbital, isMicroMode = fals
                     fontSize: '15px', fontWeight: 600, color: '#111827',
                     flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
                   }}>
-                    {node.title || 'New Project'}
+                    {node.title || (node.type === 'idea' ? 'New Idea' : 'New Project')}
                   </span>
                 )}
                 
@@ -351,7 +360,7 @@ export default function StarNode({ node, isCenter, isOrbital, isMicroMode = fals
                   <button
                     onClick={(e) => { 
                       e.stopPropagation(); 
-                      if (confirm('Delete project?')) useCosmosStore.getState().removeNode(node.id);
+                      if (confirm('Delete?')) useCosmosStore.getState().removeNode(node.id);
                     }}
                     onPointerDown={(e) => e.stopPropagation()}
                     style={{
@@ -366,7 +375,7 @@ export default function StarNode({ node, isCenter, isOrbital, isMicroMode = fals
                 )}
               </div>
               
-              {/* Project Metadata */}
+              {/* Metadata */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#6B7280' }}>
                 <span>{useCosmosStore.getState().nodes.filter(n => n.parent_id === node.id && n.type === 'idea').length} ideas</span>
                 <span>·</span>
@@ -374,7 +383,7 @@ export default function StarNode({ node, isCenter, isOrbital, isMicroMode = fals
                 <span>·</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981' }}></span>
-                  active
+                  {node.status}
                 </span>
               </div>
             </>
@@ -420,18 +429,42 @@ export default function StarNode({ node, isCenter, isOrbital, isMicroMode = fals
                 )}
               </div>
               
-              {/* Action buttons on hover for mind map */}
-              {isSelected && isInMindMap && node.type === 'idea' && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleStartTask(); }}
-                  style={{
-                    marginLeft: '8px', padding: '2px 8px', fontSize: '10px', fontWeight: 600,
-                    color: '#fff', background: '#3B82F6', border: 'none', borderRadius: '4px', cursor: 'pointer'
-                  }}
-                >
-                  ▶ To Task
-                </button>
-              )}
+              {/* Action buttons on select for mind map */}
+              {isSelected && isInMindMap && (() => {
+                // Idea → start as task
+                if (node.type === 'idea') return (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleStartTask(); }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    style={{ marginLeft: '8px', padding: '2px 8px', fontSize: '10px', fontWeight: 600, color: '#fff', background: '#3B82F6', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                  >▶ 开始</button>
+                );
+                // Task: todo → start
+                if (node.type === 'task' && (node.status === 'todo' || node.status === 'spark')) return (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); updateNode(node.id, { status: 'in_progress' as any, updated_at: new Date().toISOString() }); }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    style={{ marginLeft: '8px', padding: '2px 8px', fontSize: '10px', fontWeight: 600, color: '#fff', background: '#3B82F6', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                  >▶ 开始</button>
+                );
+                // Task: in_progress → done
+                if (node.type === 'task' && node.status === 'in_progress') return (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); updateNode(node.id, { status: 'done' as any, updated_at: new Date().toISOString() }); }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    style={{ marginLeft: '8px', padding: '2px 8px', fontSize: '10px', fontWeight: 600, color: '#fff', background: '#10B981', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                  >✓ 完成</button>
+                );
+                // Task: done → reopen
+                if (node.type === 'task' && node.status === 'done') return (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); updateNode(node.id, { status: 'todo' as any, updated_at: new Date().toISOString() }); }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    style={{ marginLeft: '8px', padding: '2px 8px', fontSize: '10px', fontWeight: 600, color: '#fff', background: '#9CA3AF', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                  >↩ 重开</button>
+                );
+                return null;
+              })()}
             </>
           )}
         </div>

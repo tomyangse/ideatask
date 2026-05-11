@@ -47,6 +47,11 @@ interface UIState {
   enterProject: (id: string) => void;
   exitProject: () => void;
   setProjectView: (view: 'mindmap' | 'timeline') => void;
+
+  /* Idea Page */
+  activeIdeaId: string | null;
+  enterIdea: (id: string) => void;
+  exitIdea: () => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -102,4 +107,9 @@ export const useUIStore = create<UIState>((set) => ({
   enterProject: (id) => set({ activeProjectId: id, projectView: 'mindmap', focusedSystemId: id }),
   exitProject: () => set({ activeProjectId: null, focusedSystemId: null }),
   setProjectView: (projectView) => set({ projectView }),
+
+  /* Idea Page */
+  activeIdeaId: null,
+  enterIdea: (id) => set({ activeIdeaId: id, focusedSystemId: id }),
+  exitIdea: () => set({ activeIdeaId: null, focusedSystemId: null }),
 }));

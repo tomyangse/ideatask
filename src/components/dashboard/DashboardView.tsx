@@ -42,6 +42,7 @@ export default function DashboardView() {
   const nodes = useCosmosStore((s) => s.nodes);
   const updateNode = useCosmosStore((s) => s.updateNode);
   const enterProject = useUIStore((s) => s.enterProject);
+  const enterIdea = useUIStore((s) => s.enterIdea);
   const [dragOverZone, setDragOverZone] = useState<'project' | 'idea' | null>(null);
   const dragNodeRef = useRef<string | null>(null);
 
@@ -102,18 +103,17 @@ export default function DashboardView() {
 
   /* ── Shared styles ── */
   const columnStyle: React.CSSProperties = {
-    flex: 1, background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E5E7EB',
-    padding: '20px 24px', display: 'flex', flexDirection: 'column', minHeight: 0,
-    transition: 'border-color 0.2s, box-shadow 0.2s',
+    flex: 1, background: '#FFFFFF', borderRadius: 0, border: 'none',
+    borderRight: '1px solid #E5E7EB',
+    padding: '24px 28px 80px', display: 'flex', flexDirection: 'column', minHeight: 0,
+    transition: 'background 0.2s',
   };
 
   const dropActiveProject: React.CSSProperties = dragOverZone === 'project' ? {
-    borderColor: '#7C3AED', boxShadow: '0 0 0 3px rgba(124,58,237,0.1)',
     background: '#FDFCFF',
   } : {};
 
   const dropActiveIdea: React.CSSProperties = dragOverZone === 'idea' ? {
-    borderColor: '#F59E0B', boxShadow: '0 0 0 3px rgba(245,158,11,0.1)',
     background: '#FFFDF7',
   } : {};
 
@@ -121,14 +121,12 @@ export default function DashboardView() {
     <div style={{
       position: 'fixed', top: '64px', left: 0, right: 0, bottom: 0,
       background: '#F8FAFC', fontFamily: "'Inter', sans-serif",
-      display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      display: 'flex', overflow: 'hidden',
     }}>
-      <div style={{ height: '56px', flexShrink: 0 }} />
-
-      {/* Two-column layout */}
+      {/* Two-column layout — 50/50 split */}
       <div style={{
-        flex: 1, display: 'flex', gap: '16px', padding: '0 32px 80px',
-        maxWidth: '1200px', width: '100%', margin: '0 auto', minHeight: 0,
+        flex: 1, display: 'flex', gap: '0', padding: '0',
+        width: '100%', minHeight: 0,
       }}>
 
         {/* ═══ LEFT: PROJECTS ═══ */}
@@ -233,9 +231,10 @@ export default function DashboardView() {
                   draggable
                   onDragStart={() => handleDragStart(idea.id)}
                   onDragEnd={handleDragEnd}
+                  onClick={() => enterIdea(idea.id)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: '8px',
-                    padding: '8px 10px', borderRadius: '8px', cursor: 'grab',
+                    padding: '8px 10px', borderRadius: '8px', cursor: 'pointer',
                     transition: 'background 0.15s', userSelect: 'none',
                   }}
                   onMouseEnter={e => e.currentTarget.style.background = '#FAFBFC'}
@@ -251,6 +250,9 @@ export default function DashboardView() {
                     )}
                     <span style={{ padding: '2px 6px', background: badge.bg, color: badge.text, fontSize: '10px', borderRadius: '4px', fontWeight: 600 }}>{badge.label}</span>
                   </div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
                 </div>
               );
             })}

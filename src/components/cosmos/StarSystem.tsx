@@ -81,14 +81,15 @@ export default function StarSystem({ rootNode, isFocused }: StarSystemProps) {
 
   // ── MIND MAP EXPANDED STATE ──
   const activeProjectId = useUIStore((s) => s.activeProjectId);
-  const isProjectPage = activeProjectId === rootNode.id;
+  const activeIdeaId = useUIStore((s) => s.activeIdeaId);
+  const isDetailPage = activeProjectId === rootNode.id || activeIdeaId === rootNode.id;
 
   const expandedSet = useMemo(() => {
     const set = new Set<string>();
     set.add(rootNode.id);
 
-    // When inside project page, expand ALL descendants for full visibility
-    if (isProjectPage) {
+    // When inside project/idea detail page, expand ALL descendants for full visibility
+    if (isDetailPage) {
       const addAll = (parentId: string) => {
         set.add(parentId);
         nodes.filter(n => n.parent_id === parentId).forEach(n => addAll(n.id));
@@ -104,7 +105,7 @@ export default function StarSystem({ rootNode, isFocused }: StarSystemProps) {
       }
     }
     return set;
-  }, [rootNode.id, selectedNodeId, nodes, isProjectPage]);
+  }, [rootNode.id, selectedNodeId, nodes, isDetailPage]);
 
   // ── LAYOUT ENGINE (Recursive Tree) ──
   const layoutMap = useMemo(() => {

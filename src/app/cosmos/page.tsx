@@ -8,6 +8,7 @@ import { useUIStore } from '@/stores/uiStore';
 import { useEffect, useState } from 'react';
 import DashboardView from '@/components/dashboard/DashboardView';
 import ProjectPage from '@/components/project/ProjectPage';
+import IdeaPage from '@/components/idea/IdeaPage';
 import UserProfile from '@/components/ui/UserProfile';
 import { 
   IconFolder, IconLightbulb, IconLayoutGrid, IconList, IconNetwork, IconSparkles, IconArrowLeft 
@@ -33,6 +34,7 @@ export default function CosmosPage() {
   const activeView = useUIStore((s) => s.activeView);
   const setActiveView = useUIStore((s) => s.setActiveView);
   const activeProjectId = useUIStore((s) => s.activeProjectId);
+  const activeIdeaId = useUIStore((s) => s.activeIdeaId);
 
   // Load backend data on mount
   useEffect(() => {
@@ -48,6 +50,8 @@ export default function CosmosPage() {
     <>
       {activeProjectId ? (
         <ProjectPage projectId={activeProjectId} />
+      ) : activeIdeaId ? (
+        <IdeaPage ideaId={activeIdeaId} />
       ) : (
         <>
           {activeView === 'Mindmap' && <CosmosCanvas />}
@@ -55,7 +59,7 @@ export default function CosmosPage() {
         </>
       )}
       <OmniBar />
-      {!activeProjectId && <FloatingCapsule />}
+      {!activeProjectId && !activeIdeaId && <FloatingCapsule />}
 
       {/* Top Navigation Bar */}
       <div
@@ -115,120 +119,9 @@ export default function CosmosPage() {
         </div>
       </div>
 
-      {/* Filter Chips & View Controls Row — hide when in project page */}
-      {!activeProjectId && <div style={{
-        position: 'fixed',
-        top: '84px',
-        left: '24px',
-        right: '24px',
-        zIndex: 39,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        userSelect: 'none',
-        pointerEvents: 'none', // Allow clicking through empty space
-      }}>
-        {/* Filter Chips */}
-        <div style={{ display: 'flex', gap: '8px', pointerEvents: 'auto' }}>
-          {[
-            { id: 'All', icon: null, count: null },
-            { id: 'Projects', icon: <IconFolder width={16} height={16} />, count: nodes.filter(n => n.type === 'project').length },
-            { id: 'Ideas', icon: <IconLightbulb width={16} height={16} />, count: nodes.filter(n => n.type === 'idea').length },
-          ].map(filter => (
-            <button
-              key={filter.id}
-              onClick={() => setActiveFilter(filter.id)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                height: '40px',
-                padding: '0 14px',
-                borderRadius: '12px',
-                fontFamily: "'Inter', sans-serif",
-                fontSize: '13px',
-                fontWeight: 500,
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                ...(activeFilter === filter.id ? {
-                  background: '#EDE9FE',
-                  color: '#6D28D9',
-                  border: '1px solid #C4B5FD',
-                  boxShadow: '0 2px 8px rgba(124, 58, 237, 0.1)',
-                } : {
-                  background: '#FFFFFF',
-                  color: '#475569',
-                  border: '1px solid #E5E7EB',
-                })
-              }}
-              onMouseEnter={(e) => {
-                if (activeFilter !== filter.id) {
-                  e.currentTarget.style.background = '#F8FAFC';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (activeFilter !== filter.id) {
-                  e.currentTarget.style.background = '#FFFFFF';
-                }
-              }}
-            >
-              {filter.icon && <span style={{ opacity: activeFilter === filter.id ? 1 : 0.7 }}>{filter.icon}</span>}
-              {filter.id}
-              {filter.count !== null && (
-                <span style={{ 
-                  marginLeft: '4px', 
-                  fontSize: '12px', 
-                  color: activeFilter === filter.id ? '#7C3AED' : '#94A3B8' 
-                }}>
-                  {filter.count}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {/* View Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', pointerEvents: 'auto' }}>
-          <div style={{
-            display: 'flex',
-            background: '#FFFFFF',
-            border: '1px solid #E5E7EB',
-            borderRadius: '12px',
-            padding: '2px',
-          }}>
-            {[
-              { id: 'Dashboard', icon: <IconLayoutGrid width={16} height={16} /> },
-              { id: 'List', icon: <IconList width={16} height={16} /> },
-              { id: 'Mindmap', icon: <IconNetwork width={16} height={16} /> },
-            ].map(view => (
-              <button
-                key={view.id}
-                onClick={() => setActiveView(view.id)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '6px 12px',
-                  borderRadius: '10px',
-                  border: 'none',
-                  background: activeView === view.id ? '#F8FAFC' : 'transparent',
-                  color: activeView === view.id ? '#6D28D9' : '#64748B',
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
-              >
-                {view.icon} {view.id}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>}
 
       {/* Bottom-left: contextual hints */}
-      {!activeProjectId && activeView === 'Mindmap' && (
+      {!activeProjectId && !activeIdeaId && activeView === 'Mindmap' && (
         <div
           style={{
             position: 'fixed',
