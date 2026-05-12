@@ -116,7 +116,7 @@ export default function GanttView({ projectId }: GanttViewProps) {
       {/* Header row */}
       <div style={{ display: 'flex', borderBottom: '1px solid #E5E7EB', flexShrink: 0 }}>
         {/* Task name column header */}
-        <div style={{ width: '280px', flexShrink: 0, padding: '10px 20px', fontSize: '11px', fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.5px', borderRight: '1px solid #F3F4F6' }}>
+        <div style={{ width: '360px', flexShrink: 0, padding: '10px 20px', fontSize: '11px', fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.5px', borderRight: '1px solid #F3F4F6' }}>
           任务
         </div>
         {/* Timeline header */}
@@ -167,7 +167,7 @@ export default function GanttView({ projectId }: GanttViewProps) {
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
               {/* Task info column */}
-              <div style={{ width: '280px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', borderRight: '1px solid #F3F4F6' }}>
+              <div style={{ width: '360px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', borderRight: '1px solid #F3F4F6' }}>
                 <button onClick={() => toggleDone(t)} style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0,
                   color: isDone ? '#10B981' : '#D1D5DB', transition: 'color 0.15s',
@@ -182,7 +182,9 @@ export default function GanttView({ projectId }: GanttViewProps) {
                   <div style={{
                     fontSize: '13px', fontWeight: 500, color: isDone ? '#9CA3AF' : '#111827',
                     textDecoration: isDone ? 'line-through' : 'none',
-                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                    overflow: 'hidden', display: '-webkit-box',
+                    WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                    lineHeight: '1.4',
                   }}>
                     {t.title}
                   </div>
@@ -191,6 +193,33 @@ export default function GanttView({ projectId }: GanttViewProps) {
                 <span style={{ fontSize: '10px', fontWeight: 600, padding: '2px 6px', borderRadius: '4px', color: sc, background: `${sc}15`, flexShrink: 0 }}>
                   {sl}
                 </span>
+
+                {/* Idea → Task conversion */}
+                {(t.type === 'idea' || t.status === 'spark') && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateNode(t.id, {
+                        type: 'task' as any,
+                        status: 'in_progress',
+                        goal: t.title,
+                        target_date: new Date().toISOString().slice(0, 10),
+                        updated_at: new Date().toISOString(),
+                      });
+                    }}
+                    title="将想法转为任务并开始实施"
+                    style={{
+                      background: '#3B82F6', border: 'none', cursor: 'pointer',
+                      padding: '2px 8px', borderRadius: '4px', flexShrink: 0,
+                      fontSize: '10px', fontWeight: 600, color: '#fff',
+                      transition: 'background 0.15s', whiteSpace: 'nowrap',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#2563EB'}
+                    onMouseLeave={e => e.currentTarget.style.background = '#3B82F6'}
+                  >
+                    ▶ 开始
+                  </button>
+                )}
 
                 {/* Date edit */}
                 {editingId === t.id ? (

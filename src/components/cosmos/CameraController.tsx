@@ -21,6 +21,7 @@ export default function CameraController() {
   const targetZoomRef = useRef(80);
 
   const activeProjectId = useUIStore((s) => s.activeProjectId);
+  const activeIdeaId = useUIStore((s) => s.activeIdeaId);
   const nodes = useCosmosStore((s) => s.nodes);
 
   // When a system is focused, auto-fit the tree into view
@@ -41,8 +42,13 @@ export default function CameraController() {
           return false;
         });
 
-        if (activeProjectId && descendants.length > 0) {
-          // For project page: auto-fit all nodes
+        // For non-root nodes rendered with overrideOrigin, use (0,0) as origin
+        const isNonRoot = !!rootNode.parent_id;
+        const originX = isNonRoot ? 0 : rootNode.pos_x;
+        const originY = isNonRoot ? 0 : rootNode.pos_y;
+
+        if ((activeProjectId || activeIdeaId) && descendants.length > 0) {
+          // Auto-fit all nodes into view
           // Compute actual tree depth
           let maxDepth = 0;
           const getDepth = (id: string, depth: number) => {
@@ -59,15 +65,15 @@ export default function CameraController() {
 
           // Center on middle of the tree
           targetRef.current.set(
-            rootNode.pos_x + treeWidth / 2 + 20,
-            rootNode.pos_y,
+            originX + treeWidth / 2 + 20,
+            originY,
             0
           );
           // Zoom to fit the larger dimension with some padding
           const fitZoom = Math.max(treeWidth / 1.4, treeHeight / 1.4, 25);
           targetZoomRef.current = fitZoom;
         } else {
-          targetRef.current.set(rootNode.pos_x + 12, rootNode.pos_y, 0);
+          targetRef.current.set(originX + 12, originY, 0);
           targetZoomRef.current = 40;
         }
       }
@@ -79,7 +85,7 @@ export default function CameraController() {
       targetZoomRef.current = 20;
     }
     prevFocusedRef.current = focusedSystemId;
-  }, [focusedSystemId, focusTarget, getNodeById, activeProjectId, nodes]);
+  }, [focusedSystemId, focusTarget, getNodeById, activeProjectId, activeIdeaId, nodes]);
 
   // Mouse wheel zoom
   const handleWheel = useCallback((e: WheelEvent) => {

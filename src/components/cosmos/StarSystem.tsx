@@ -66,9 +66,10 @@ function MindMapBranch({
 interface StarSystemProps {
   rootNode: ExoNode;
   isFocused: boolean;
+  overrideOrigin?: boolean;
 }
 
-export default function StarSystem({ rootNode, isFocused }: StarSystemProps) {
+export default function StarSystem({ rootNode, isFocused, overrideOrigin }: StarSystemProps) {
   const nodes = useCosmosStore((s) => s.nodes);
   const selectedNodeId = useUIStore((s) => s.selectedNodeId);
   const config = STAR_CONFIG[rootNode.type];
@@ -175,7 +176,7 @@ export default function StarSystem({ rootNode, isFocused }: StarSystemProps) {
   }, [isFocused, nodes, rootNode.id, expandedSet]);
 
   return (
-    <group position={[rootNode.pos_x, rootNode.pos_y, 0]}>
+    <group position={overrideOrigin ? [0, 0, 0] : [rootNode.pos_x, rootNode.pos_y, 0]}>
       <StarNode node={rootNode} isCenter={true} isMicroMode={isFocused} />
       
       {isFocused ? (
