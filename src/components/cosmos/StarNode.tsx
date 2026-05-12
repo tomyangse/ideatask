@@ -350,7 +350,7 @@ export default function StarNode({ node, isCenter, isOrbital, isMicroMode = fals
                 ) : (
                   <span style={{
                     fontSize: '15px', fontWeight: 600, color: '#111827',
-                    flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                    flex: 1, whiteSpace: 'nowrap'
                   }}>
                     {node.title || (node.type === 'idea' ? 'New Idea' : 'New Project')}
                   </span>
@@ -414,7 +414,7 @@ export default function StarNode({ node, isCenter, isOrbital, isMicroMode = fals
                       }
                     }}
                     style={{
-                      width: `${Math.max(node.title.length * 8, 80)}px`, minWidth: '80px', maxWidth: '280px',
+                      width: `${Math.max(node.title.length * 8, 80)}px`, minWidth: '80px',
                       padding: '2px 6px', fontSize: '13px', fontWeight: 500, color: '#111827',
                       border: '1px solid #3B82F6', borderRadius: '4px', outline: 'none'
                     }}
@@ -422,7 +422,7 @@ export default function StarNode({ node, isCenter, isOrbital, isMicroMode = fals
                 ) : (
                   <span style={{
                     fontSize: '13px', fontWeight: 500, color: '#374151',
-                    maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap'
                   }}>
                     {node.title || 'New Node'}
                   </span>
