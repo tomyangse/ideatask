@@ -82,7 +82,7 @@ export default function ProjectPage({ projectId }: ProjectPageProps) {
     <>
       {/* Project top bar */}
       <div style={{
-        position: 'fixed', top: '64px', left: 0, right: 0, height: '56px', zIndex: 39,
+        position: 'fixed', top: '64px', left: 0, right: 0, height: '64px', zIndex: 39,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 24px', background: '#FFFFFF', borderBottom: '1px solid #E5E7EB',
         fontFamily: "'Inter', sans-serif",
@@ -104,12 +104,12 @@ export default function ProjectPage({ projectId }: ProjectPageProps) {
           <div style={{ width: '1px', height: '24px', background: '#E5E7EB' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {projectIcon(project.title)}
             </div>
             <div>
-              <div style={{ fontSize: '14px', fontWeight: 600, color: '#111827' }}>{project.title}</div>
-              <div style={{ fontSize: '11px', color: '#9CA3AF' }}>{done}/{total} 任务完成</div>
+              <div style={{ fontSize: '18px', fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px' }}>{project.title}</div>
+              <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '1px' }}>{done}/{total} 任务完成</div>
             </div>
           </div>
 

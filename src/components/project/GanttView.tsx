@@ -109,7 +109,7 @@ export default function GanttView({ projectId }: GanttViewProps) {
 
   return (
     <div style={{
-      position: 'fixed', top: '120px', left: 0, right: 0, bottom: 0,
+      position: 'fixed', top: '128px', left: 0, right: 0, bottom: 0,
       background: '#FFFFFF', fontFamily: "'Inter', sans-serif",
       display: 'flex', flexDirection: 'column', overflow: 'hidden',
     }}>

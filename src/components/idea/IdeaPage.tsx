@@ -62,7 +62,7 @@ export default function IdeaPage({ ideaId }: IdeaPageProps) {
     <>
       {/* Idea top bar */}
       <div style={{
-        position: 'fixed', top: '64px', left: 0, right: 0, height: '56px', zIndex: 39,
+        position: 'fixed', top: '64px', left: 0, right: 0, height: '64px', zIndex: 39,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 24px', background: '#FFFFFF', borderBottom: '1px solid #E5E7EB',
         fontFamily: "'Inter', sans-serif",
@@ -84,18 +84,18 @@ export default function IdeaPage({ ideaId }: IdeaPageProps) {
           <div style={{ width: '1px', height: '24px', background: '#E5E7EB' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#FFFBEB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#FFFBEB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <IconLightbulb width={20} height={20} color="#F59E0B" />
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '14px', fontWeight: 600, color: '#111827' }}>{idea.title}</span>
+                <span style={{ fontSize: '18px', fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px' }}>{idea.title}</span>
                 <span style={{
                   padding: '2px 8px', fontSize: '10px', fontWeight: 600,
                   background: badge.bg, color: badge.text, borderRadius: '4px',
                 }}>{badge.label}</span>
               </div>
-              <div style={{ fontSize: '11px', color: '#9CA3AF' }}>
+              <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '1px' }}>
                 {children.length} 子节点
                 {idea.ai_category && <span style={{ marginLeft: '8px', padding: '1px 6px', background: '#F3F4F6', borderRadius: '3px', fontSize: '10px' }}>{idea.ai_category}</span>}
               </div>
